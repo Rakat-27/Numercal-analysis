@@ -1,0 +1,63 @@
+#include <iostream>
+#include <cmath>
+
+void naiveGaussElimination(double** matrix, int n) {
+    for (int i = 0; i < n; ++i) {
+        // Make the diagonal element 1
+        double diagElement = matrix[i][i];
+        for (int j = 0; j <= n; ++j) {
+            matrix[i][j] /= diagElement;
+        }
+
+        // Eliminate other elements in the current column
+        for (int k = 0; k < n; ++k) {
+            if (k != i) {
+                double factor = matrix[k][i];
+                for (int j = 0; j <= n; ++j) {
+                    matrix[k][j] -= factor * matrix[i][j];
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    // Given data
+    const int n = 3;
+    double times[n] = {5, 8, 12};
+    double velocities[n] = {106.8, 177.2, 279.2};
+
+    // Formulating the system of equations
+    double** augmentedMatrix = new double*[n];
+    for (int i = 0; i < n; ++i) {
+        augmentedMatrix[i] = new double[n + 1];
+        augmentedMatrix[i][0] = pow(times[i], 2);
+        augmentedMatrix[i][1] = times[i];
+        augmentedMatrix[i][2] = 1;
+        augmentedMatrix[i][3] = velocities[i];
+    }
+
+    // Perform Naive Gauss Elimination
+    naiveGaussElimination(augmentedMatrix, n);
+
+    // Display the coefficients
+    double a1 = augmentedMatrix[0][3];
+    double a2 = augmentedMatrix[1][3];
+    double a3 = augmentedMatrix[2][3];
+    std::cout << "a1 = " << a1 << std::endl;
+    std::cout << "a2 = " << a2 << std::endl;
+    std::cout << "a3 = " << a3 << std::endl;
+
+    // Calculate velocity at t=6 seconds
+    double t = 6;
+    double velocityAtT = a1 * pow(t, 2) + a2 * t + a3;
+    std::cout << "Velocity at t=6 seconds: " << velocityAtT << std::endl;
+
+    // Clean up memory
+    for (int i = 0; i < n; ++i) {
+        delete[] augmentedMatrix[i];
+    }
+    delete[] augmentedMatrix;
+
+    return 0;
+}
